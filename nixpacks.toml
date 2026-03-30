@@ -2,10 +2,10 @@
 nixPkgs = ["nodejs_20"]
 
 [phases.install]
-cmds = ["npm ci && npm install -g serve"]
+cmds = ["npm ci"]
 
 [phases.build]
 cmds = ["npm run build"]
 
 [start]
-cmd = "serve -s dist -l tcp://0.0.0.0:$PORT --cors --no-clipboard -c ../serve.json"
+cmd = "node server.js"
