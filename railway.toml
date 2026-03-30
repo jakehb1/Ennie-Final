@@ -2,4 +2,4 @@
 builder = "nixpacks"
 
 [deploy]
-startCommand = "serve -s dist -l tcp://0.0.0.0:$PORT --cors --no-clipboard -c ../serve.json"
+startCommand = "node server.js"
