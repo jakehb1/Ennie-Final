@@ -48,8 +48,20 @@ const GlobalCSS = () => (
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet" />
     <style>{`
       * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-      body { background: ${T.bg}; color: ${T.text}; font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; }
+      html, body { overscroll-behavior: none; -webkit-overflow-scrolling: touch; }
+      body { background: ${T.bg}; color: ${T.text}; font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; position: fixed; width: 100%; height: 100%; overflow: hidden; }
       h1,h2,h3,h4 { font-family: 'Syne', sans-serif !important; letter-spacing: -0.025em; }
+      /* Prevent iOS zoom on input focus (font-size >= 16px) */
+      input, textarea, select { font-size: 16px !important; }
+      /* Disable user-select on interactive UI elements */
+      button, [role="button"], label { -webkit-user-select: none; user-select: none; }
+      /* Safe area CSS custom properties */
+      :root {
+        --sat: env(safe-area-inset-top, 0px);
+        --sab: env(safe-area-inset-bottom, 0px);
+        --sal: env(safe-area-inset-left, 0px);
+        --sar: env(safe-area-inset-right, 0px);
+      }
       @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
       @keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
       @keyframes slideDown { from { opacity:0; transform:translateY(-12px) } to { opacity:1; transform:translateY(0) } }
@@ -90,7 +102,7 @@ const Logo = ({ size = 20, full }) => (
 );
 
 const Header = ({ left, center, right }) => (
-  <div style={{ padding: "12px 20px", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${T.border}`, background: "rgba(255,255,255,0.94)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 20, minHeight: 52 }}>
+  <div style={{ padding: "12px 20px", paddingTop: "calc(12px + env(safe-area-inset-top, 0px))", paddingLeft: "calc(20px + env(safe-area-inset-left, 0px))", paddingRight: "calc(20px + env(safe-area-inset-right, 0px))", display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${T.border}`, background: "rgba(255,255,255,0.94)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", position: "sticky", top: 0, zIndex: 20, minHeight: 52 }}>
     <div style={{ flex: 1, display: "flex", alignItems: "center" }}>{left || <Logo />}</div>
     <div style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>{center}</div>
     <div style={{ flex: 1, display: "flex", justifyContent: "flex-end", alignItems: "center" }}>{right}</div>
@@ -289,7 +301,7 @@ const StatCard = ({ label, value, sub, color = T.accent, icon }) => (
 
 /* ─── Tab Bar ─── */
 const TabBar = ({ tabs, active, onTab }) => (
-  <div style={{ borderTop: `1px solid ${T.border}`, background: "rgba(255,255,255,0.96)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", position: "sticky", bottom: 0, zIndex: 20, padding: "10px 16px 14px" }}>
+  <div style={{ borderTop: `1px solid ${T.border}`, background: "rgba(255,255,255,0.96)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", position: "sticky", bottom: 0, zIndex: 20, padding: "10px 16px 14px", paddingBottom: "calc(14px + env(safe-area-inset-bottom, 0px))", paddingLeft: "calc(16px + env(safe-area-inset-left, 0px))", paddingRight: "calc(16px + env(safe-area-inset-right, 0px))" }}>
     <div style={{ display: "flex", gap: 6, overflowX: "auto" }}>
       {tabs.map(t => (
         <button key={t.id} onClick={() => onTab(t.id)} style={{
@@ -2537,7 +2549,8 @@ export default function EnnieApp() {
   const containerStyle = {
     width: "100%", maxWidth: 420, margin: "0 auto", height: "100dvh", display: "flex",
     flexDirection: "column", background: T.bg, color: T.text, position: "relative",
-    fontFamily: "'DM Sans', -apple-system, sans-serif", fontSize: 14, overflow: "hidden",
+    fontFamily: "'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif", fontSize: 14, overflow: "hidden",
+    WebkitOverflowScrolling: "touch", overscrollBehavior: "none",
   };
 
   const renderScreen = () => {
@@ -2567,7 +2580,7 @@ export default function EnnieApp() {
       case "matchNotif": return <SmartMatchScreen skillBuildCondition={skillBuildCondition} onClaim={() => go("healerSession")} onDecline={() => go("availability")} />;
       case "healerSession": return <HealerSessionScreen onEnd={() => go("healerPost")} />;
       case "healerPost": return <HealerPostScreen onReady={() => go("healerPing")} onHome={() => go("healerHome")} />;
-      case "adminHome": return <AdminScreen onBack={() => go("landing")} />;
+      case "adminPanel": return <AdminScreen onBack={() => go("landing")} />;
       case "tiers": return <TierScreen onSelect={(t) => { setSelectedTier(t); go("payment"); }} onGroup={() => go("groupSchedule")} onBack={() => go("intake")} />;
       case "groupSchedule": return <GroupScheduleScreen onSingle={() => go("groupConfirm")} onSubscribe={() => go("groupConfirm")} onBack={() => go("routing")} />;
       case "groupConfirm": return <GroupConfirmScreen sessions={[groupSessions[0], groupSessions[2]]} isSub={false} onIntake={() => { setPins([]); go("groupIntake"); }} onBack={() => go("groupSchedule")} />;
