@@ -2,3 +2,23 @@ node_modules
 dist
 .DS_Store
 *.local
+
+# iOS build artifacts (keep project structure, ignore builds)
+ios/App/Pods/
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+ios/App/App.xcodeproj/project.xcworkspace/xcshareddata/
+ios/DerivedData/
+*.xcuserstate
+
+# Android build artifacts (keep project structure, ignore builds)
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/.idea/
+android/captures/
+*.apk
+*.aab
+*.jks
+*.keystore
